@@ -48,6 +48,18 @@ void copyCoordinates(short X[], short Y[], short index)
     }
 }
 
+bool BottomEdge(int x){
+    return x == 19;
+}
+
+bool LeftEdge(int y){
+    return y == 0;
+}
+
+bool RightEdge(int y){
+    return y == 9;
+}
+
 class Tetromino{
 private:
     short X[4];
@@ -109,24 +121,83 @@ public:
         }
     }
     
-   /*void MoveDown(){
+   void MoveDown(){
+       if(!InCollisionDown()){
+        boardX++;
+       }
    }
 
    void MoveLeft(){
+       if(!InCollisionLeft()){
+        boardY--;
+       }
    }
 
    void MoveRight(){
+       if(!InCollisionRight()){
+        boardY++;
+       }
    }
 
    bool InCollisionDown(){
+       int newX, newY; //da bi bilo citljivije
+
+       for(int i = 0; i < 4; i++){
+        newX = boardX + X[i] + 1;
+        newY = boardY + Y[i];
+
+        if(BottomEdge(newX) ||
+           (board[newX][newY] != 0 && !PartOfFigure(X[i] + 1, Y[i]))){
+            return true;
+        }
+        //jedna figura je u koliziji ako
+        //pozicija na koju zelimo da pomjerimo bilo koji blok dotakne dno ili lijevu ili desnu ivicu ekrana
+        //ili ako je pozicija na koju zelimo da pomjerimo bilo koji od blokova vec zauzeta a da nije dio figure prije pomijeranja
+       }
+
+       return false;
    }
 
    bool InCollisionLeft(){
+       int newX, newY;
+
+       for(int i = 0; i < 4; i++){
+        newX = boardX + X[i];
+        newY = boardY + Y[i] - 1;
+
+        if(LeftEdge(newY) ||
+           (board[newX][newY] != 0 && !PartOfFigure(X[i], Y[i] - 1))){
+            return true;
+        }
+       }
+
+       return false;
    }
 
 
    bool InCollisionRight(){
-   }*/
+       int newX, newY;
+
+       for(int i = 0; i < 4; i++){
+        newX = boardX + X[i];
+        newY = boardY + Y[i] + 1;
+
+        if(RightEdge(newY) ||
+           (board[newX][newY] != 0 && !PartOfFigure(X[i], Y[i] + 1))){
+            return true;
+        }
+       }
+
+       return false;
+   }
+
+   bool PartOfFigure(int x, int y){
+       for(int i = 0; i < 4; i++){
+        if(X[i] == x && Y[i] == y) return true;
+       }
+
+       return false;
+   }
 };
 
 
