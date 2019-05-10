@@ -18,6 +18,8 @@ InterruptIn rotateBtn(dp9);
 Ticker t;
 const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
 
+float leftBoundary = 1./6, right Boundary 5./6;
+
 void InitializeDisplay()
 {
     //ovdje inicijalizujemo display
@@ -264,12 +266,35 @@ void UpdateBoard()
     }
 }
 
+
+void ReadJoystick() {
+    if(VRx < leftBoundary) {
+        leftBoundary = 2./6;
+        currentTetromino.MoveLeft();
+    }
+    else if(VRx > rightBoundary) {
+        rightBoundary = 4./6;
+        currentTetromino.MoveRight();
+    }
+    else {
+        leftBoundary = 1./6;
+        rightBoundary = 5./6;
+    }
+}
+
+bool IsOver() {
+    for(int i = 0; i < 10; i++) {
+        if(board[0][j] != 0) return true;
+    }
+    return false;
+}
+
 int nekiBroj = 0; //ovo treba biti neki random broj za sljedecu figuru
 void TickerCallback(){
     ReadJoystick();
     
     if(!currentTetromino.MoveDown())){
-        figure.OnAttached();
+        currentTetromino.OnAttached();
         UpdateBoard();
         currentTetromino = Tetromino(nekiBroj);
     }
