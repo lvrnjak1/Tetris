@@ -142,7 +142,7 @@ to zahtjeva 10+ float varijabli da se definišu granice napona. Vidjet ćemo ako
 void CheckLines(short &firstLine, short &numberOfLines)
 {
     //vraća preko reference prvu liniju koja je popunjena do kraja, kao i takvih linija
-    firstLine = 0;
+    firstLine = -1; //postavljen na -1 jer ako nema linija koje treba brisati ispod u DeleteLines neće se ući u petlju
     numberOfLines = 0;
     for(int i = 19; i >= 0; i--) {
         short temp = 0;
