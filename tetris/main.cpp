@@ -277,7 +277,7 @@ void UpdateBoard()
             //bojimo nove blokove u bijelo
         }
     }
-    score += UpdateScore(numOfLines); //ovdje se mijenja globalna varijabla score
+    score += UpdateScore(numberOfLines); //ovdje se mijenja globalna varijabla score
 }
 
 
