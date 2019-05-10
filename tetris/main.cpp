@@ -309,7 +309,6 @@ bool IsOver() {
     return false;
 }
 
-int nekiBroj = 0; //ovo treba biti neki random broj za sljedecu figuru
 void TickerCallback(){
     ReadJoystick();
     
@@ -317,7 +316,11 @@ void TickerCallback(){
         currentTetromino.OnAttached();
         UpdateBoard();
         ShowScore();//TODO
-        currentTetromino = Tetromino(nekiBroj);
+        
+        srand(time(NULL));
+        int nextColor = rand() % 7 + 1;
+        
+        currentTetromino = Tetromino(nextColor);
     }
 }
 
