@@ -125,27 +125,30 @@ public:
         }
     }
     
-   void MoveDown(){
+   bool MoveDown(){
        if(!InCollisionDown()){
-            deleteFigure();
+            DeleteFigure();
             boardX++;
-            drawFigure();
+            DrawFigure();
+            return true;
        }
+       
+       return false;
    }
 
    void MoveLeft(){
        if(!InCollisionLeft()){
-           deleteFigure();
+           DeleteFigure();
            boardY--;
-           drawFigure();
+           DrawFigure();
        }
    }
 
    void MoveRight(){
        if(!InCollisionRight()){
-           deleteFigure();
+           DeleteFigure();
            boardY++;
-           drawFigure();
+           DrawFigure();
        }
    }
 
@@ -261,12 +264,22 @@ void UpdateBoard()
     }
 }
 
+int nekiBroj = 0; //ovo treba biti neki random broj za sljedecu figuru
+void TickerCallback(){
+    ReadJoystick();
+    
+    if(!currentTetromino.MoveDown())){
+        figure.OnAttached();
+        UpdateBoard();
+        currentTetromino = Tetromino(nekiBroj);
+    }
+}
+
 int main()
 {
     rotateBtn.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
     rotateBtn.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
-    t.attach(&currentTetromino, &Tetromino::MoveDown(), delay); //spusta jedan red nize svake sekunde
-    //sta se desi kad dodje do kolizije, treba dio koji generise novi tetromino :D
+    t.attach(&TickerCallback, delay); //spusta jedan red nize svake sekunde
     
     InitializeDisplay(); //ovdje se uključi display
     while(1) {
