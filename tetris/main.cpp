@@ -14,6 +14,10 @@ AnalogIn VRy(dp10);
 //taster na joysticku za rotaciju
 InterruptIn rotateBtn(dp9);
 
+//ticker koji spusta figuru jedan red nize
+Ticker t;
+const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
+
 void InitializeDisplay()
 {
     //ovdje inicijalizujemo display
@@ -123,19 +127,25 @@ public:
     
    void MoveDown(){
        if(!InCollisionDown()){
-        boardX++;
+            deleteFigure();
+            boardX++;
+            drawFigure();
        }
    }
 
    void MoveLeft(){
        if(!InCollisionLeft()){
-        boardY--;
+           deleteFigure();
+           boardY--;
+           drawFigure();
        }
    }
 
    void MoveRight(){
        if(!InCollisionRight()){
-        boardY++;
+           deleteFigure();
+           boardY++;
+           drawFigure();
        }
    }
 
@@ -255,6 +265,9 @@ int main()
 {
     rotateBtn.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
     rotateBtn.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
+    t.attach(&currentTetromino, &Tetromino::MoveDown(), delay); //spusta jedan red nize svake sekunde
+    //sta se desi kad dodje do kolizije, treba dio koji generise novi tetromino :D
+    
     InitializeDisplay(); //ovdje se uključi display
     while(1) {
         //vidjet ćemo ide li išta u while
