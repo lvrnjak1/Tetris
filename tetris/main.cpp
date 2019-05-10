@@ -53,10 +53,13 @@ private:
     short X[4];
     short Y[4];
     short boardX, boardY;
+    unsigned char colorIndex;//dodao sam colorIndex zasad, jer nema drugog načina da popunimo matricu sa indeksima boja
+    //ovo je najbezbolnija varijanta što se memorije tiče
     int color;
 public:
-    Tetromino(short color) {
-        this.color = colors[color];
+    Tetromino(unsigned char colorIndex) {
+        this.color = colors[colorIndex];
+        this.colorIndex = colorIndex;
         boardX = 0;
         boardY = 4; //3,4 ili 5 najbolje da vidimo kad imamo display
         copyCoordinates(X, Y, color);
@@ -97,6 +100,15 @@ public:
         }
     }
     
+    void OnAttached() {
+        //metoda se poziva kad figura prestanje da se krece
+        //popunimo matricu indeksom boje
+        for(int i = 0; i < 4; i++) {
+            board[boardX + X[i]][boardY + Y[i]] = colorIndex;
+            //btw board bi mogao biti niz tipa unsigned char, ali to ćemo vidjet kasnije
+        }
+    }
+    
    /*void MoveDown(){
    }
 
@@ -116,7 +128,10 @@ public:
    bool InCollisionRight(){
    }*/
 };
- 
+
+
+Tetromino currentTetromino; //ne postoji konstr. bez parametara, ali nek stoji zasad ovako
+
 /*VAŽNO: nisam htio da izvršim histerezu joystick-a još jer
 to zahtjeva 10+ float varijabli da se definišu granice napona. Vidjet ćemo ako nam ostane memorije, da to uradimo. */
 
@@ -124,7 +139,36 @@ to zahtjeva 10+ float varijabli da se definišu granice napona. Vidjet ćemo ako
 //jer interrupt in možemo prikačiti za instancu klase
 //ovako štedimo jednu funkciju
 
-Tetromino currentTetromino; //ne postoji konstr. bez parametara, ali nek stoji zasad ovako
+void CheckLines(short &firstLine, short &numberOfLines)
+{
+    //vraća preko reference prvu liniju koja je popunjena do kraja, kao i takvih linija
+    firstLine = 0;
+    numberOfLines = 0;
+    for(int i = 19; i >= 0; i--) {
+        short temp = 0;
+        for(int j = 0; j < 10; j++) {
+            if(board[i][j] == 0) break; //ako je makar jedna bijela, prekida se brojanje
+            temp++;
+        }
+        if(temp == 10) { //ako je temo došao do 10, niti jedna bijela - puna linija
+            numberOfLines++;
+            if(firstLine == 0) firstLine = i; //ovo mijenjamo samo prvi put
+        }
+    }
+}
+
+
+void DeleteLines()
+{
+    short firstLine, numberOfLines;
+    CheckLines(firstLine, numberOfLines); //pozivamo funkciju
+    for(int i = firstLine; i >= numberOfLines; i--) {
+        for(int j = 0; j < 10; j++) board[i][j] = board[i - numberOfLines][j];
+    }
+    for(int i = 0; i < firstLine; i++) {
+        for(int j = 0; j < 10 ; j++) board[i][j] = 0; //u prvih onoliko redova koliko su obrisani stavljamo 0
+    }
+}
 
 int main()
 {
