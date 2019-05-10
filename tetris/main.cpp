@@ -120,17 +120,16 @@ public:
 /*VAŽNO: nisam htio da izvršim histerezu joystick-a još jer
 to zahtjeva 10+ float varijabli da se definišu granice napona. Vidjet ćemo ako nam ostane memorije, da to uradimo. */
 
-void RotateFigure()
-{
-    //ovdje pozivamo funkciju da provjerimo da li se može rotirati(zbog granica itd)
-    //ako može, pozovemo funkciju Rotate nad instancom klase Figura
-    //ovo se veže za InterruptIn
-}
+//rekli smo da nam treba i RotateFigure, ali sad sam skontao nam ne trebaju dvije funkcije 
+//jer interrupt in možemo prikačiti za instancu klase
+//ovako štedimo jednu funkciju
+
+Tetromino currentTetromino; //ne postoji konstr. bez parametara, ali nek stoji zasad ovako
 
 int main()
 {
     rotateBtn.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
-    rotateBtn.rise(&RotateFigure); //na uzlaznu ivicu
+    rotateBtn.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
     InitializeDisplay(); //ovdje se uključi display
     while(1) {
         //vidjet ćemo ide li išta u while
