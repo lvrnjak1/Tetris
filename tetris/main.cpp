@@ -76,7 +76,17 @@ private:
     //ovo je najbezbolnija varijanta što se memorije tiče
     int color;
 public:
+    Tetromino(){
+        srand(time(NULL));
+        int r = rand() % 7 + 1;
+        Initialize(r);
+    }
+
     Tetromino(unsigned char colorIndex) {
+        Initialize(colorIndex);
+    }
+
+    void Initialize(unsigned char colorIndex) {
         this.color = colors[colorIndex];
         this.colorIndex = colorIndex;
         boardX = 0;
@@ -217,7 +227,7 @@ public:
 };
 
 
-Tetromino currentTetromino; //ne postoji konstr. bez parametara, ali nek stoji zasad ovako
+Tetromino currentTetromino();
 
 /*VAŽNO: nisam htio da izvršim histerezu joystick-a još jer
 to zahtjeva 10+ float varijabli da se definišu granice napona. Vidjet ćemo ako nam ostane memorije, da to uradimo. */
