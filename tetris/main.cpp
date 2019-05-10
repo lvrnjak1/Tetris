@@ -152,7 +152,7 @@ void CheckLines(short &firstLine, short &numberOfLines)
         }
         if(temp == 10) { //ako je temo došao do 10, niti jedna bijela - puna linija
             numberOfLines++;
-            if(firstLine == 0) firstLine = i; //ovo mijenjamo samo prvi put
+            if(firstLine == -1) firstLine = i; //ovo mijenjamo samo prvi put
         }
     }
 }
