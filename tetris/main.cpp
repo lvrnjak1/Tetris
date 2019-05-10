@@ -19,6 +19,7 @@ Ticker t;
 const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
 
 float leftBoundary = 1./6, right Boundary 5./6;
+int score = 0;
 
 void InitializeDisplay()
 {
@@ -244,6 +245,18 @@ void CheckLines(short &firstLine, short &numberOfLines)
 }
 
 
+int UpdateScore (short numOfLines){ 
+    int newIncrement = 0;
+    switch(numOfLines) {
+        case 1 : newIncrement = 40; break;
+        case 2 : newIncrement = 100; break;
+        case 3 : newIncrement = 300; break;
+        case 4 : newIncrement = 1200; break;
+        default : newIncrement = 0; break;
+    }
+    return newIncrement;
+}
+
 void UpdateBoard()
 {
     short firstLine, numberOfLines;
@@ -264,8 +277,15 @@ void UpdateBoard()
             //bojimo nove blokove u bijelo
         }
     }
+    score += UpdateScore(numOfLines); //ovdje se mijenja globalna varijabla score
 }
 
+
+void ShowScore() {
+    //pomocna funkcija za prikazivanje score-a
+    //implementirat cu kasnije da skontam dimenzije dijela za igru i dijela za score
+    //poziva se u Tickeru
+}
 
 void ReadJoystick() {
     if(VRx < leftBoundary) {
@@ -296,6 +316,7 @@ void TickerCallback(){
     if(!currentTetromino.MoveDown())){
         currentTetromino.OnAttached();
         UpdateBoard();
+        ShowScore();//TODO
         currentTetromino = Tetromino(nekiBroj);
     }
 }
