@@ -79,7 +79,6 @@ private:
     short boardX, boardY;
     unsigned char colorIndex;//dodao sam colorIndex zasad, jer nema drugog načina da popunimo matricu sa indeksima boja
     //ovo je najbezbolnija varijanta što se memorije tiče
-    int color;
 public:
     Tetromino(){
         srand(time(NULL));
@@ -92,7 +91,6 @@ public:
     }
 
     void Initialize(unsigned char colorIndex) {
-        this.color = colors[colorIndex];
         this.colorIndex = colorIndex;
         boardX = 0;
         boardY = 4; //3,4 ili 5 najbolje da vidimo kad imamo display
@@ -133,7 +131,7 @@ public:
             //stavio sam 16 za početak, možemo se opet skontati na labu
             //ovo pretpostavlja da nema margina, mogu se lagano dodati uz neku konstantu kao offset
             int upperLeftX = (boardX + X[i]) * DIMENSION, uppperLeftY = (boardY + Y[i]) * DIMENSION;
-            display.fillrect(upperLeftX, upperLeftY, upperLeftX + DIMENSION, upperLeftY + DIMENSION, color);
+            display.fillrect(upperLeftX, upperLeftY, upperLeftX + DIMENSION, upperLeftY + DIMENSION, colors[colorIndex]);
             //ovo boji granice blokova u crno, možemo skloniti ako ti se ne sviđa
             display.rect(upperLeftX, upperLeftY, upperLeftX + DIMENSION, upperLeftY + DIMENSION, Black);
         }
