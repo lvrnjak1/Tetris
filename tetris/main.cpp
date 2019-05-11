@@ -344,7 +344,7 @@ void UpdateBoard()
     for(int i = 0; i < numberOfLines; i++) {
         for(int j = 0; j < 10 ; j++) {
             board[firstLine - numberOfLines - i][j] = 0; //u prvih onoliko redova koliko su obrisani stavljamo 0
-            display.fillrect(i * DIMENSION, j * DIMENSION, i * (DIMENSION + 1), j * (DIMENSION + 1), White); 
+            display.fillrect((firstLine - numberOfLines - i) * DIMENSION, j * DIMENSION, (firstLine - numberOfLines - i) * (DIMENSION + 1), j * (DIMENSION + 1), White); 
             //bojimo nove blokove u bijelo
         }
     }
