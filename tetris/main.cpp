@@ -51,7 +51,7 @@ short board[20][10] = {0}; //matrica boja, 0 - 7 indeksi boja
 short figuresX[7][4] = {{0,0,0,0}, {0,0,1,1}, {0,1,1,1}, {1,1,0,0}, {0,1,0,1}, {0,1,2,2}, {1,1,1,0}};
 short figuresY[7][4] = {{0,1,2,3}, {1,0,0,1}, {1,1,2,0}, {0,1,1,2}, {0,1,1,2}, {1,1,1,0}, {0,1,2,2}};
 
-void copyCoordinates(short X[], short Y[], short index)
+void copyCoordinates(short X[], short Y[], unsigned char index)
 {
     //umjesto one prošle metode za kopiranje, ova prima index, čisto da nam olakša život
     for(int i = 0; i < 4; i++) {
