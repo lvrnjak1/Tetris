@@ -260,7 +260,7 @@ int UpdateScore (short numOfLines){
         case 2 : newIncrement = 100; break;
         case 3 : newIncrement = 300; break;
         case 4 : newIncrement = 1200; break;
-        default : newIncrement = 0; break;
+        default : newIncrement = 10; break; //dodao ovo jer valjda i kad nema brisanja linije dobiju se neki poeni
     }
     return newIncrement;
 }
