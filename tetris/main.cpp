@@ -23,7 +23,13 @@ unsigned int score = 0; //stavio sam ovo unsigned int za veći opseg, mada je ja
 bool firstTime = true; //ako je prvi put, figura se crta u Tickeru
 bool gameStarted = false;
 
-void ShowScore(void);
+
+void ShowScore() {
+    //pomocna funkcija za prikazivanje score-a
+    display.fillRect(20, 165, 50, 235, White); //popunimo pravugaonik da obrišemo stari score
+    display.locate(35, 200); //valjda je na sredini pravougaonika
+    printf("%d", score);
+}
 
 void DrawCursor(int color) {
     display.fillrect((level + 1) * 100, 60, (level + 1) * 100 + 12, 72, color);
@@ -291,7 +297,7 @@ Tetromino currentTetromino();
 void CheckLines(short &firstLine, short &numberOfLines)
 {
     //vraća preko reference prvu liniju koja je popunjena do kraja, kao i takvih linija
-    firstLine = -1; //postavljen na -1 jer ako nema linija koje treba brisati ispod u DeleteLines neće se ući u petlju
+    firstLine = -1; //postavljen na -1 jer ako nema linija koje treba brisati ispod u UpdateBoard neće se ući u petlju
     numberOfLines = 0;
     for(int i = 19; i >= 0; i--) {
         short temp = 0;
@@ -332,22 +338,17 @@ void UpdateBoard()
             //ako nije bijela boja, crtamo granice
         }
     }
-    for(int i = 0; i < firstLine; i++) {
+    //ranije nije bilo dobro u ovoj petlji
+    //sada je okej provjerio sam
+    //dobro pa sam vidio na vrijeme
+    for(int i = 0; i < numberOfLines; i++) {
         for(int j = 0; j < 10 ; j++) {
-            board[i][j] = 0; //u prvih onoliko redova koliko su obrisani stavljamo 0
+            board[firstLine - numberOfLines - i][j] = 0; //u prvih onoliko redova koliko su obrisani stavljamo 0
             display.fillrect(i * DIMENSION, j * DIMENSION, i * (DIMENSION + 1), j * (DIMENSION + 1), White); 
             //bojimo nove blokove u bijelo
         }
     }
     score += UpdateScore(numberOfLines); //ovdje se mijenja globalna varijabla score
-}
-
-
-void ShowScore() {
-    //pomocna funkcija za prikazivanje score-a
-    display.fillRect(20, 165, 50, 235, White); //popunimo pravugaonik da obrišemo stari score
-    display.locate(35, 200); //valjda je na sredini pravougaonika
-    printf("%d", score);
 }
 
 void ReadJoystick() {
