@@ -16,12 +16,33 @@ InterruptIn rotateBtn(dp9);
 //ticker koji spusta figuru jedan red nize
 Ticker t;
 
-const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
-char leftBoundary = 1, rightBoundary = 5, downBoundary = 1;// sada je ovo tipa char
+int level = 1;
+const float delays[3] = {1, 0.7, 0.4}; //svakih koliko se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo, ovisi o levelu
+char leftBoundary = 1, rightBoundary = 5, downBoundary = 1, upBoundary = 5;// sada je ovo tipa char
 int score = 0;
 bool firstTime = true; //ako je prvi put, figura se crta u Tickeru
+bool gameStarted = false;
 
 void ShowScore(void);
+
+void ChooseLevel(void){
+ //funkcija koja crta meni za izabir levela
+ //treba je pozvati prije initialize display
+  //moja ideja : Ova metoda se pozove u mainu, napravi se funkcija koja se poziva na interrupt in tastera
+   //u toj se funkciji ako je game started samo pozove rotate
+   //u suprotnom uradi se toggle od game started
+    //u mainu ostatak tj ono sa initalize display treba pozvati tek kad je gameStarted = true; 
+    //nesto tako
+}
+
+void ChooseNext(int delta){
+    //funkcija koja se pozove kad se joystickom promijeni level - treba da pomjeri simbol i uradi ovu promjenu levela
+    //iako se mijenja, tek kad se pritisne taster zapravo se pocinje sa igrom - poziva se u ReadJoystick pogledaj
+    //pomjeriti simbol TODO
+    level =+ delta;
+    if(level == 4) level = 1;
+    if(level == 0) level = 4;
+}
 
 void InitializeDisplay()
 {
@@ -327,23 +348,37 @@ void ShowScore() {
 }
 
 void ReadJoystick() {
-    if(VRx < leftBoundary / 6.0) {
+    if(VRx < leftBoundary / 6.0 && gameStarted) {
         leftBoundary = 2;
         currentTetromino.MoveLeft();
     }
-    else if(VRx > rightBoundary / 6.0) {
+    else if(VRx > rightBoundary / 6.0 && gameStarted) {
         rightBoundary = 4;
         currentTetromino.MoveRight();
     }
     else if(VRy < downBoundary / 6.0){
         downBoundary = 2;
-        currentTetromino.HardDrop();
+        if(gameStarted){
+           currentTetromino.HardDrop();
+        }else{
+            ChooseNextLevel(1); //funkcija koja ce pomjeriti onaj simbol na displayu koji govori
+            //koji level je odabran te ce postaviti varijablu level na tu vrijednost (privremeno je sve dok se taster ne pritisne)
+            //1 znaci da ode jedan level vise
+        }
+        
+    }
+    else if(VRy > upBoundary / 6.0 && !gameStarted){
+        downBoundary = 4;
+        ChooseNextLevel(-1); //ovo znaci da ode jedan level nize
     }
     else {
         leftBoundary = 1;
         rightBoundary = 5;
         downBoundary = 1;
+        upBoundary = 5;
     }
+    
+    //ima li ljepsi nacin za ovo, nervira me if u ifu ali mislim da mora ovako :D
 }
 
 bool IsOver() {
