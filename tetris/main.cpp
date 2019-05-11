@@ -190,6 +190,7 @@ public:
        SetFinalPosition();
        DrawFigure();
        //treba još vidjeti koje izmjene u tickeru trebaju
+       score += 14; //prema igrici koju smo igrali, dobije se 14 poena kad se uradi hard drop
    }
 
    void SetFinalPosition() {
