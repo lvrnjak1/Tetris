@@ -356,11 +356,8 @@ void ReadJoystick() {
         if(gameStarted){
            currentTetromino.HardDrop();
         }else{
-            ChooseNextLevel(1); //funkcija koja ce pomjeriti onaj simbol na displayu koji govori
-            //koji level je odabran te ce postaviti varijablu level na tu vrijednost (privremeno je sve dok se taster ne pritisne)
-            //1 znaci da ode jedan level vise
+            ChooseNextLevel(1); //1 znaci da ode jedan level vise
         }
-        
     }
     else if(VRy > upBoundary / 6.0 && !gameStarted){
         downBoundary = 4;
