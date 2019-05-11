@@ -12,7 +12,7 @@ SPI_TFT_ILI9341 display(dp2, dp1, dp6, dp24, dp23, dp25, "TFT");
 AnalogIn VRx(dp11);
 AnalogIn VRy(dp10);
 //taster na joysticku za rotaciju
-InterruptIn rotateBtn(dp9);
+InterruptIn taster(dp9);
 //ticker koji spusta figuru jedan red nize
 Ticker t;
 
@@ -25,19 +25,14 @@ bool gameStarted = false;
 
 void ShowScore(void);
 
-void ChooseLevel(void){
- //funkcija koja crta meni za izabir levela
- //treba je pozvati prije initialize display
-  //moja ideja : Ova metoda se pozove u mainu, napravi se funkcija koja se poziva na interrupt in tastera
-   //u toj se funkciji ako je game started samo pozove rotate
-   //u suprotnom uradi se toggle od game started
-    //u mainu ostatak tj ono sa initalize display treba pozvati tek kad je gameStarted = true; 
-    //nesto tako
+void ShowLevelMenu(){
+ //prikazuje meni za izbor levela
 }
 
 void ChooseNext(int delta){
     //funkcija koja se pozove kad se joystickom promijeni level - treba da pomjeri simbol i uradi ovu promjenu levela
     //iako se mijenja, tek kad se pritisne taster zapravo se pocinje sa igrom - poziva se u ReadJoystick pogledaj
+ 
     //pomjeriti simbol TODO
     level =+ delta;
     if(level == 4) level = 1;
@@ -427,13 +422,23 @@ void TickerCallback(){
     }
 }
 
+void OnTasterPressed(){
+    if(gameStarted){
+        currentTetromino.Rotate();
+    }else{
+        gameStarted = true;
+        InitializeDisplay(); //pocinje igra, prikazuje se tabla
+        t.attach(&TickerCallback, delays[level - 1]); //svakih nekoliko spusta figuru jedan red nize
+    }
+}
+
 int main()
 {
-    rotateBtn.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
-    rotateBtn.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
-    t.attach(&TickerCallback, delays[level - 1]); //spusta jedan red nize svake sekunde
+    ShowLevelMenu();
+ 
+    taster.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
+    taster.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
     
-    InitializeDisplay(); //ovdje se uključi display
     while(1) {
         //vidjet ćemo ide li išta u while
     }
