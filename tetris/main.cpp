@@ -169,7 +169,25 @@ public:
            DrawFigure();
        }
    }
+    
+   void HardDrop() {
+       //ovo je funkcija za hard drop
+       //obrisemo figuru, postavimo novu poziciju na dnu, nacrtamo figuru
+       DeleteFigure();
+       SetFinalPosition();
+       DrawFigure();
+       //treba još vidjeti koje izmjene u tickeru trebaju
+   }
 
+   void SetFinalPosition() {
+       //pokušaj da se implementira HardDrop
+       //vidjet ćemo kako radi
+       //ne moramo ovo iskoristiti
+       //u petlji povećavam boardX sve dok InCollisionDown ne vrati true
+       while(InCollisionDown() == false) boardX++;
+   }
+   
+   
    bool InCollisionDown(){
        int newX, newY; //da bi bilo citljivije
 
