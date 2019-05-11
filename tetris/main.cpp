@@ -13,13 +13,15 @@ AnalogIn VRx(dp11);
 AnalogIn VRy(dp10);
 //taster na joysticku za rotaciju
 InterruptIn rotateBtn(dp9);
-
 //ticker koji spusta figuru jedan red nize
 Ticker t;
-const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
 
+const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
 float leftBoundary = 1./6, right Boundary 5./6;
 int score = 0;
+bool firstTime = true; //ako je prvi put, figura se crta u Tickeru
+
+void ShowScore(void);
 
 void InitializeDisplay()
 {
@@ -29,6 +31,9 @@ void InitializeDisplay()
     display.background(White); //bijela pozadina
     display.foreground(Black); //crni tekst
     display.set_font((unsigned char*) Arial12x12);
+    display.fillRect(0, 160, 320, 240, Black); //dio za prikazivanje rezultata će biti crni pravougaonik, a tabla je bijeli
+    display.fillRect(20, 165, 50, 235, White); //dio za rezultat je bijeli Pravougaonik isto kao tabla
+    ShowScore();
 }
 
 //white - no figure
@@ -78,7 +83,7 @@ private:
 public:
     Tetromino(){
         srand(time(NULL));
-        int r = rand() % 7 + 1;
+        unsigned char r = rand() % 7 + 1;
         Initialize(r);
     }
 
@@ -229,13 +234,6 @@ public:
 
 Tetromino currentTetromino();
 
-/*VAŽNO: nisam htio da izvršim histerezu joystick-a još jer
-to zahtjeva 10+ float varijabli da se definišu granice napona. Vidjet ćemo ako nam ostane memorije, da to uradimo. */
-
-//rekli smo da nam treba i RotateFigure, ali sad sam skontao nam ne trebaju dvije funkcije 
-//jer interrupt in možemo prikačiti za instancu klase
-//ovako štedimo jednu funkciju
-
 void CheckLines(short &firstLine, short &numberOfLines)
 {
     //vraća preko reference prvu liniju koja je popunjena do kraja, kao i takvih linija
@@ -293,8 +291,9 @@ void UpdateBoard()
 
 void ShowScore() {
     //pomocna funkcija za prikazivanje score-a
-    //implementirat cu kasnije da skontam dimenzije dijela za igru i dijela za score
-    //poziva se u Tickeru
+    display.fillRect(20, 165, 50, 235, White); //popunimo pravugaonik da obrišemo stari score
+    display.locate(35, 200); //valjda je na sredini pravougaonika
+    printf("%d", score);
 }
 
 void ReadJoystick() {
@@ -319,18 +318,42 @@ bool IsOver() {
     return false;
 }
 
+void ShowGameOverScreen() {
+    display.cls();
+    display.background(Black);
+    display.foreground(White);
+    display.locate(120, 50);
+    printf("GAME OVER");
+    display.locate(150, 30);
+    printf("YOUR SCORE IS %d", score);
+}
+
 void TickerCallback(){
+    if(firstTime) {
+        currentTetromino.DrawFigure();
+        firstTime = false;
+    }
+    
     ReadJoystick();
     
     if(!currentTetromino.MoveDown())){
         currentTetromino.OnAttached();
         UpdateBoard();
-        ShowScore();//TODO
+        ShowScore();
         
         srand(time(NULL));
-        int nextColor = rand() % 7 + 1;
-        
+        unsigned char nextColor = rand() % 7 + 1;  
         currentTetromino = Tetromino(nextColor);
+        currentTetromino.DrawFigure();
+        
+        if(IsOver()) {
+            //ako je igra završena brišemo sve sa displey-a, prikazujemo poruku i score
+            //takođe moramo dettach-at ticker
+            t.dettach();
+            ShowGameOverScreen();
+            score = 0;
+            firstTime = true;
+        }
     }
 }
 
