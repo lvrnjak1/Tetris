@@ -17,7 +17,7 @@ InterruptIn rotateBtn(dp9);
 Ticker t;
 
 const int delay = 1; //svakih 1s se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo
-float leftBoundary = 1./6, right Boundary 5./6;
+char leftBoundary = 1, rightBoundary = 5; // sada je ovo tipa char
 int score = 0;
 bool firstTime = true; //ako je prvi put, figura se crta u Tickeru
 
@@ -297,17 +297,17 @@ void ShowScore() {
 }
 
 void ReadJoystick() {
-    if(VRx < leftBoundary) {
-        leftBoundary = 2./6;
+    if(VRx < leftBoundary / 6.0) {
+        leftBoundary = 2;
         currentTetromino.MoveLeft();
     }
-    else if(VRx > rightBoundary) {
-        rightBoundary = 4./6;
+    else if(VRx > rightBoundary / 6.0) {
+        rightBoundary = 4;
         currentTetromino.MoveRight();
     }
     else {
-        leftBoundary = 1./6;
-        rightBoundary = 5./6;
+        leftBoundary = 1;
+        rightBoundary = 5;
     }
 }
 
