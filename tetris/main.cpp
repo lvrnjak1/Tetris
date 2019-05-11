@@ -102,14 +102,27 @@ public:
     void Rotate(){
        short pivotX = X[1], pivotY = Y[1];
         //prvi elemnti u matrici su pivoti oko koje rotiramo
-       for(int i = 0; i < 4; i++) {
+        
+       short newX[4]; //pozicije blokova nakon rotiranja ako sve bude ok
+       short newY[4];
+
+       for(int i = 0; i < 4; i++){
            short tmp = X[i], tmp2 = Y[i];
-           X[i] = pivotX + pivotY - tmp2;
-           Y[i] = tmp + pivotX - pivotY;
-           //morao sam promijeniti ono tvoje, jer sam našao pravilno kako se rotira
-           //ne može ostati X[i] = Y[i] kao kod tebe jer je to clockwise, a ovo counter-clockwise
-           //provjerio sam na nekoliko slučajeva i radi ali provjeri i ti
+           newX[i] = pivotX + pivotY - tmp2;
+           newY[i] = tmp + pivotX - pivotY;
+
+           if(OutOfBounds(newX[i], newY[i])
+              || (board[boardX + newX[i]][boardY + newX[i]] != 0 && !PartOfFigure(newX[i], newX[i]))){
+                return;
+              }
        }
+
+       for(int i = 0; i < 4; i++){
+           X[i] = newX[i];
+           Y[i] = newY[i];
+       }
+    //metoda sada vrsi i provjeru ispravnosti pozicije na koje bi se trebala figura postaviti nakon rotiranja
+    //ako nije ispravno za sad ne radi nista, neki podaci na internetu kazu da se pomijera desno lijevo da bi uspjela rotacija??
    }
 
     void DrawFigure() {
