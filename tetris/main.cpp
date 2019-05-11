@@ -16,29 +16,47 @@ InterruptIn taster(dp9);
 //ticker koji spusta figuru jedan red nize
 Ticker t;
 
-int level = 0;
+unsigned char level = 0; //mora biti tipa usigned char jer inače se može desiti da level bude manji od 0, a i da ne trošimo memoriju
 const float delays[3] = {1, 0.7, 0.4}; //svakih koliko se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo, ovisi o levelu
 char leftBoundary = 1, rightBoundary = 5, downBoundary = 1, upBoundary = 5;// sada je ovo tipa char
-int score = 0;
+unsigned int score = 0; //stavio sam ovo unsigned int za veći opseg, mada je jako teško da se i int premaši, ali nmvz
 bool firstTime = true; //ako je prvi put, figura se crta u Tickeru
 bool gameStarted = false;
 
 void ShowScore(void);
 
-void ShowLevelMenu(){
- //prikazuje meni za izbor levela
+void DrawCursor(int color) {
+    display.fillrect((level + 1) * 100, 60, (level + 1) * 100 + 12, 72, color);
+}
+
+void Init() {
+   //ovo su zajedničke osobine za sve prikaze na display-u
+   //nikad se ne mijenjaju i pozvat ćemo je jednom prije petlje
+    display.claim(stdout);
+    display.set_orientation(2); // 2 ili 0, zavisi kako okrenemo display, provjerit ćemo na labu kako nam je najlakše povezat 
+    display.set_font((unsigned char*) Arial12x12);
+}
+
+void ShowLevelMenu() {
+    //ovdje inicijalizujemo display
+    display.cls(); // brišemo prethodno
+    display.background(Black);
+    display.foreground(White);
+    display.locate(100, 80);
+    printf("LEVEL 1");
+    display.locate(200, 80);
+    printf("LEVEL 2");
+    display.locate(300, 80);
+    printf("LEVEL 3");
+    DrawCursor(White);
 }
 
 void InitializeDisplay()
 {
-    //ovdje inicijalizujemo display
-    display.claim(stdout);
-    display.set_orientation(2); // 2 ili 0, zavisi kako okrenemo display, provjerit ćemo na labu kako nam je najlakše povezat
+    display.cls(); // brišemo ShowLevelMenu
     display.background(White); //bijela pozadina
     display.foreground(Black); //crni tekst
-    display.set_font((unsigned char*) Arial12x12);
     display.fillRect(0, 160, 320, 240, Black); //dio za prikazivanje rezultata će biti crni pravougaonik, a tabla je bijeli
-    display.fillRect(20, 165, 50, 235, White); //dio za rezultat je bijeli Pravougaonik isto kao tabla
     ShowScore();
 }
 
@@ -289,16 +307,16 @@ void CheckLines(short &firstLine, short &numberOfLines)
 }
 
 
-int UpdateScore (short numOfLines){ 
-    int newIncrement = 0;
+unsigned int UpdateScore (short numOfLines){ 
+    unsigned int newIncrement = 0;
     switch(numOfLines) {
-        case 1 : newIncrement = 40; break;
-        case 2 : newIncrement = 100; break;
-        case 3 : newIncrement = 300; break;
-        case 4 : newIncrement = 1200; break;
-        default : newIncrement = 10; break; //dodao ovo jer valjda i kad nema brisanja linije dobiju se neki poeni
+        case 1 : newIncrement =  40; break;
+        case 2 : newIncrement =  100; break;
+        case 3 : newIncrement =  300; break;
+        case 4 : newIncrement =  1200; break;
+        default : newIncrement = 0; break; //update funkcije za score, još sam vratio ovo na 0
     }
-    return newIncrement;
+    return newIncrement * (level + 1);
 }
 
 void UpdateBoard()
@@ -353,20 +371,22 @@ void ReadJoystick() {
 }
 
 void ReadJoystickForLevel(){
+    DrawCursor(Black); //na prethodni level popunimo bojom pozadine
     if(VRy < downBoundary / 6.0){
         downBoundary = 2;
         level = (level + 1) % 3;
-        //TODO nacrtati simbol pored levela na ekranu
     }
     else if(VRy > upBoundary / 6.0){
         upBoundary = 4;
-        level = (level - 1) % 3;
-         //TODO nacrtati simbol pored levela na ekranu
+        (level == 0) ? level = 2 : level--; //ne radi ona prethodna varijanta jer % vraća i negastivni rezultat
+     //to što ne koristimo unsigned tip ne pomaže jer će doći do overflow-a
     }
     else {
         downBoundary = 1;
         upBoundary = 5;
     }
+    DrawCursor(White); //na novi level popunimo bijelom bojom - pozadina je crna
+   //koristio sam fillrect, jer njega svakako moramo koristiti, jer možda budemo morali da brišemo fillcircle iz biblioteke
 }
 
 bool IsOver() {
@@ -384,6 +404,7 @@ void ShowGameOverScreen() {
     printf("GAME OVER");
     display.locate(150, 30);
     printf("YOUR SCORE IS %d", score);
+    wait(3); //ovaj prikaz traje 3s (možemo mijenjati) a nakon toga se ponovo prikazuje meni sa levelima
 }
 
 void TickerCallback(){
@@ -408,9 +429,13 @@ void TickerCallback(){
             //ako je igra završena brišemo sve sa displey-a, prikazujemo poruku i score
             //takođe moramo dettach-at ticker
             t.dettach();
-            ShowGameOverScreen();
+            ShowGameOverScreen(); //prikaz da je kraj igre, ima wait od 3s
             score = 0;
-            firstTime = true;
+            firstTime = true;//ovo vraćamo na true da bi se u novoj igri ponovo nacrtal prva figura u tickeru
+            gameStarted = false; //kraj igre
+            //sve atribute igre restartujemo
+            ShowLevelMenu(); //ponovo prikazujemo prikaz za odabir levela
+            return;
         }
     }
 }
@@ -427,13 +452,13 @@ void OnTasterPressed(){
 
 int main()
 {
-    ShowLevelMenu();
- 
+    Init();//inicijalizacija osobina display-a
+    ShowLevelMenu(); //pocetni meni
     taster.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
-    taster.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
+    taster.rise(&OnTasterPressed); //na uzlaznu ivicu
     
     while(1) {
-        //vidjet ćemo ide li išta u while
+         if(!gameStarted) ReadJoystickForLevel(); //ako igra nije počela u petlji čitamo joystick neprekidno
     }
     return 0;
 }
