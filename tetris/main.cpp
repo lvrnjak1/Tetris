@@ -16,7 +16,7 @@ InterruptIn taster(dp9);
 //ticker koji spusta figuru jedan red nize
 Ticker t;
 
-int level = 1;
+int level = 0;
 const float delays[3] = {1, 0.7, 0.4}; //svakih koliko se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo, ovisi o levelu
 char leftBoundary = 1, rightBoundary = 5, downBoundary = 1, upBoundary = 5;// sada je ovo tipa char
 int score = 0;
@@ -27,16 +27,6 @@ void ShowScore(void);
 
 void ShowLevelMenu(){
  //prikazuje meni za izbor levela
-}
-
-void ChooseNext(int delta){
-    //funkcija koja se pozove kad se joystickom promijeni level - treba da pomjeri simbol i uradi ovu promjenu levela
-    //iako se mijenja, tek kad se pritisne taster zapravo se pocinje sa igrom - poziva se u ReadJoystick pogledaj
- 
-    //pomjeriti simbol TODO
-    level =+ delta;
-    if(level == 4) level = 1;
-    if(level == 0) level = 4;
 }
 
 void InitializeDisplay()
@@ -343,34 +333,40 @@ void ShowScore() {
 }
 
 void ReadJoystick() {
-    if(VRx < leftBoundary / 6.0 && gameStarted) {
+    if(VRx < leftBoundary / 6.0) {
         leftBoundary = 2;
         currentTetromino.MoveLeft();
     }
-    else if(VRx > rightBoundary / 6.0 && gameStarted) {
+    else if(VRx > rightBoundary / 6.0) {
         rightBoundary = 4;
         currentTetromino.MoveRight();
     }
     else if(VRy < downBoundary / 6.0){
         downBoundary = 2;
-        if(gameStarted){
-           currentTetromino.HardDrop();
-        }else{
-            ChooseNextLevel(1); //1 znaci da ode jedan level vise
-        }
-    }
-    else if(VRy > upBoundary / 6.0 && !gameStarted){
-        downBoundary = 4;
-        ChooseNextLevel(-1); //ovo znaci da ode jedan level nize
+        currentTetromino.HardDrop();
     }
     else {
         leftBoundary = 1;
         rightBoundary = 5;
         downBoundary = 1;
+    }
+}
+
+void ReadJoystickForLevel(){
+    if(VRy < downBoundary / 6.0){
+        downBoundary = 2;
+        level = (level + 1) % 3;
+        //TODO nacrtati simbol pored levela na ekranu
+    }
+    else if(VRy > upBoundary / 6.0){
+        upBoundary = 4;
+        level = (level - 1) % 3;
+         //TODO nacrtati simbol pored levela na ekranu
+    }
+    else {
+        downBoundary = 1;
         upBoundary = 5;
     }
-    
-    //ima li ljepsi nacin za ovo, nervira me if u ifu ali mislim da mora ovako :D
 }
 
 bool IsOver() {
@@ -425,7 +421,7 @@ void OnTasterPressed(){
     }else{
         gameStarted = true;
         InitializeDisplay(); //pocinje igra, prikazuje se tabla
-        t.attach(&TickerCallback, delays[level - 1]); //svakih nekoliko spusta figuru jedan red nize
+        t.attach(&TickerCallback, delays[level]); //svakih nekoliko spusta figuru jedan red nize
     }
 }
 
