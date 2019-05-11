@@ -431,7 +431,7 @@ int main()
 {
     rotateBtn.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
     rotateBtn.rise(&currentTetromino, &Tetromino::Rotate); //na uzlaznu ivicu
-    t.attach(&TickerCallback, delay); //spusta jedan red nize svake sekunde
+    t.attach(&TickerCallback, delays[level - 1]); //spusta jedan red nize svake sekunde
     
     InitializeDisplay(); //ovdje se uključi display
     while(1) {
