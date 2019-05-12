@@ -342,9 +342,7 @@ void UpdateBoard()
             //ako nije bijela boja, crtamo granice
         }
     }
-    //ranije nije bilo dobro u ovoj petlji
-    //sada je okej provjerio sam
-    //dobro pa sam vidio na vrijeme
+    //NIJE OK POPRAVI !!!
     for(int i = 0; i < numberOfLines; i++) {
         for(int j = 0; j < 10 ; j++) {
             board[firstLine - numberOfLines - i][j] = 0; //u prvih onoliko redova koliko su obrisani stavljamo 0
