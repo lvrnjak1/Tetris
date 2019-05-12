@@ -102,6 +102,10 @@ bool RightEdge(int y){
     return y == 9;
 }
 
+bool OutOfBounds(int x, int y){
+    return x < 0 || x > 9 || y > 19;
+}
+
 class Tetromino{
 private:
     short X[4];
