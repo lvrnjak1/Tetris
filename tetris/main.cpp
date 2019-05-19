@@ -12,9 +12,10 @@ SPI_TFT_ILI9341 display(dp2, dp1, dp6, dp24, dp23, dp25, "TFT");
 AnalogIn VRx(dp11);
 AnalogIn VRy(dp10);
 //taster na joysticku za rotaciju
-InterruptIn taster(dp9);
+InterruptIn taster(dp9), reset(dp1); //dodao taster za reset igrice
 //ticker koji spusta figuru jedan red nize
 Ticker t;
+Timer debounceTaster, debounceReset; //dva timera za debouncing
 
 unsigned char level = 0; //mora biti tipa usigned char jer inače se može desiti da level bude manji od 0, a i da ne trošimo memoriju
 const float delays[3] = {1, 0.7, 0.4}; //svakih koliko se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo, ovisi o levelu
@@ -402,6 +403,13 @@ void ShowGameOverScreen() {
     wait(3); //ovaj prikaz traje 3s (možemo mijenjati) a nakon toga se ponovo prikazuje meni sa levelima
 }
 
+void EndPlay() {
+    score = 0;
+    firstTime = true;
+    gameStarted = false;
+    ShowLevelMenu();
+}
+
 void TickerCallback(){
     if(firstTime) {
         currentTetromino.DrawFigure();
@@ -425,12 +433,7 @@ void TickerCallback(){
             //takođe moramo dettach-at ticker
             t.dettach();
             ShowGameOverScreen(); //prikaz da je kraj igre, ima wait od 3s
-            score = 0;
-            firstTime = true;//ovo vraćamo na true da bi se u novoj igri ponovo nacrtal prva figura u tickeru
-            gameStarted = false; //kraj igre
-            //sve atribute igre restartujemo
-            ShowLevelMenu(); //ponovo prikazujemo prikaz za odabir levela
-            return;
+            EndPlay();
         }
     }
 }
@@ -445,13 +448,27 @@ void OnTasterPressed(){
     }
 }
 
+void EndGame() {
+    if(debounceReset.read_ms() > 200) {
+        if(gameStarted) {
+            t.dettach();
+            EndPlay();
+        }
+        debounceReset.reset();
+    }
+}
+
 int main()
 {
     Init();//inicijalizacija osobina display-a
     ShowLevelMenu(); //pocetni meni
     taster.mode(PullUp); //mora se aktivirati pull up otpornik na tasteru joystick-a
     taster.rise(&OnTasterPressed); //na uzlaznu ivicu
-    
+    reset.rise(&EndGame);
+    debounceTaster.reset();
+    debounceReset.reset();
+    debounceTaster.start();
+    debounceReset.start();
     while(1) {
          if(!gameStarted) ReadJoystickForLevel(); //ako igra nije počela u petlji čitamo joystick neprekidno
     }
