@@ -154,6 +154,10 @@ public:
            X[i] = newX[i];
            Y[i] = newY[i];
        }
+       short tmpBoardX = boardX, tmpBoardY = boardY;
+       boardX = pivotX + pivotY - tempBoardY;
+       boardY = tmpBoardX + pivotX - pivotY;
+        //dodao rotaciju za gornji lijevi ugao
     //metoda sada vrsi i provjeru ispravnosti pozicije na koje bi se trebala figura postaviti nakon rotiranja
     //ako nije ispravno za sad ne radi nista, neki podaci na internetu kazu da se pomijera desno lijevo da bi uspjela rotacija??
    }
