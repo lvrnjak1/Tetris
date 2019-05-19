@@ -333,18 +333,12 @@ void UpdateBoard()
     for(int i = firstLine; i >= numberOfLines; i--) {
         for(int j = 0; j < 10; j++) {
             board[i][j] = board[i - numberOfLines][j];
+            board[i - numberOfLines][j] = 0;
+            short tmp = i - numberOfLines;
             display.fillrect(i * DIMENSION, j * DIMENSION, i * (DIMENSION + 1), j * (DIMENSION + 1), colors[board[i][j]]); // bojimo novi blok
             if(board[i][j] != 0) 
                 display.rect(i * DIMENSION, j * DIMENSION, i * (DIMENSION + 1), j * (DIMENSION + 1), Black);
-            //ako nije bijela boja, crtamo granice
-        }
-    }
-    //NIJE OK POPRAVI !!!
-    for(int i = 0; i < numberOfLines; i++) {
-        for(int j = 0; j < 10 ; j++) {
-            board[firstLine - numberOfLines - i][j] = 0; //u prvih onoliko redova koliko su obrisani stavljamo 0
-            display.fillrect((firstLine - numberOfLines - i) * DIMENSION, j * DIMENSION, (firstLine - numberOfLines - i) * (DIMENSION + 1), j * (DIMENSION + 1), White); 
-            //bojimo nove blokove u bijelo
+            display.fillrect(tmp * DIMENSION, j * DIMENSION, tmp * (DIMENSION + 1), j * (DIMENSION + 1), White);
         }
     }
     score += UpdateScore(numberOfLines); //ovdje se mijenja globalna varijabla score
