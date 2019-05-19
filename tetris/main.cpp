@@ -15,7 +15,7 @@ AnalogIn VRy(dp10);
 InterruptIn taster(dp9), reset(dp1); //dodao taster za reset igrice
 //ticker koji spusta figuru jedan red nize
 Ticker t;
-Timer debounceTaster, debounceReset; //dva timera za debouncing
+Timer debounceTaster, debounceEnd; //dva timera za debouncing
 
 unsigned char level = 0; //mora biti tipa usigned char jer inače se može desiti da level bude manji od 0, a i da ne trošimo memoriju
 const float delays[3] = {1, 0.7, 0.4}; //svakih koliko se spusti jedan red, ovo provjeriti da li je presporo ili prebrzo, ovisi o levelu
@@ -439,22 +439,26 @@ void TickerCallback(){
 }
 
 void OnTasterPressed(){
-    if(gameStarted){
-        currentTetromino.Rotate();
-    }else{
-        gameStarted = true;
-        InitializeDisplay(); //pocinje igra, prikazuje se tabla
-        t.attach(&TickerCallback, delays[level]); //svakih nekoliko spusta figuru jedan red nize
+    if(debounceTaster.read_ms() > 200) {
+        if(gameStarted){
+            currentTetromino.Rotate();
+        }
+        else{
+            gameStarted = true;
+            InitializeDisplay(); //pocinje igra, prikazuje se tabla
+            t.attach(&TickerCallback, delays[level]); //svakih nekoliko spusta figuru jedan red nize
+        }
+        debounceTaster.reset();
     }
 }
 
 void EndGame() {
-    if(debounceReset.read_ms() > 200) {
+    if(debounceEnd.read_ms() > 200) {
         if(gameStarted) {
             t.dettach();
             EndPlay();
         }
-        debounceReset.reset();
+        debounceEnd.reset();
     }
 }
 
@@ -466,9 +470,9 @@ int main()
     taster.rise(&OnTasterPressed); //na uzlaznu ivicu
     reset.rise(&EndGame);
     debounceTaster.reset();
-    debounceReset.reset();
+    debounceEnd.reset();
     debounceTaster.start();
-    debounceReset.start();
+    debounceEnd.start();
     while(1) {
          if(!gameStarted) ReadJoystickForLevel(); //ako igra nije počela u petlji čitamo joystick neprekidno
     }
