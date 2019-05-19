@@ -188,10 +188,10 @@ public:
         }
     }
     
-   bool MoveDown(){
-       if(!InCollisionDown()){
+   bool MoveDown(char delta = 1){
+       if(!InCollisionDown(delta)){
             DeleteFigure();
-            boardX++;
+            boardX+=delta;
             DrawFigure();
             return true;
        }
@@ -215,14 +215,15 @@ public:
        }
    }
     
-   void HardDrop() {
-       //ovo je funkcija za hard drop
-       //obrisemo figuru, postavimo novu poziciju na dnu, nacrtamo figuru
+   void SoftDrop() {
+       //ovo je funkcija za soft drop
+       //obrisemo figuru, postavimo novu poziciju dva reda ispod, nacrtamo figuru
        DeleteFigure();
-       SetFinalPosition();
+       //SetFinalPosition();
+       MoveDown(2);
        DrawFigure();
        //treba još vidjeti koje izmjene u tickeru trebaju
-       score += 14; //prema igrici koju smo igrali, dobije se 14 poena kad se uradi hard drop
+       score += 2 * (level +1); //prema igrici koju smo igrali, dobije se 14 poena kad se uradi hard drop
    }
 
    void SetFinalPosition() {
@@ -234,15 +235,15 @@ public:
    }
    
    
-   bool InCollisionDown(){
+   bool InCollisionDown(char delta = 1){
        int newX, newY; //da bi bilo citljivije
 
        for(int i = 0; i < 4; i++){
-        newX = boardX + X[i] + 1;
+        newX = boardX + X[i] + delta;
         newY = boardY + Y[i];
 
         if(BottomEdge(newX) ||
-           (board[newX][newY] != 0 && !PartOfFigure(X[i] + 1, Y[i]))){
+           (board[newX][newY] != 0 && !PartOfFigure(X[i] + delta, Y[i]))){
             return true;
         }
         //jedna figura je u koliziji ako
@@ -364,7 +365,7 @@ void ReadJoystick() {
     }
     else if(VRy < downBoundary / 6.0){
         downBoundary = 2;
-        currentTetromino.HardDrop();
+        currentTetromino.SoftDrop();
     }
     else {
         leftBoundary = 1;
