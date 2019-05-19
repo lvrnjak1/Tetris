@@ -219,21 +219,12 @@ public:
        //ovo je funkcija za soft drop
        //obrisemo figuru, postavimo novu poziciju dva reda ispod, nacrtamo figuru
        DeleteFigure();
-       //SetFinalPosition();
        MoveDown(2);
        DrawFigure();
        //treba još vidjeti koje izmjene u tickeru trebaju
        score += 2 * (level +1); //prema igrici koju smo igrali, dobije se 14 poena kad se uradi hard drop
    }
 
-   void SetFinalPosition() {
-       //pokušaj da se implementira HardDrop
-       //vidjet ćemo kako radi
-       //ne moramo ovo iskoristiti
-       //u petlji povećavam boardX sve dok InCollisionDown ne vrati true
-       while(InCollisionDown() == false) boardX++;
-   }
-   
    
    bool InCollisionDown(char delta = 1){
        int newX, newY; //da bi bilo citljivije
