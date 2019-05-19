@@ -33,7 +33,7 @@ void ShowScore() {
 }
 
 void DrawCursor(int color) {
-    display.fillrect((level + 1) * 100, 60, (level + 1) * 100 + 12, 72, color);
+    display.fillrect((level + 1) * 100 - 50, 60, (level + 1) * 100 - 50 + 12, 72, color);
 }
 
 void Init() {
@@ -49,11 +49,11 @@ void ShowLevelMenu() {
     display.cls(); // brišemo prethodno
     display.background(Black);
     display.foreground(White);
-    display.locate(100, 80);
+    display.locate(50, 80);
     printf("LEVEL 1");
-    display.locate(200, 80);
+    display.locate(150, 80);
     printf("LEVEL 2");
-    display.locate(300, 80);
+    display.locate(250, 80);
     printf("LEVEL 3");
     DrawCursor(White);
 }
