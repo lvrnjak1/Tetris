@@ -25,16 +25,44 @@
 Cilj projekta je modeliranje igrice Tetris što je i navedeno u specifikaciji. Funkcionalnosti su realizirane kroz niz klasa i pomoćnih funkcija. \\
 U projektu se koristi Banggood display kao grafički interfejs za igricu. Za rad sa displejem korištena je odgovarajuća biblioteka koja nudi skup funkcija od kojih su neke korištene za realizaciju igrice. Za upravljanje displejom, te prikaz različitih interfejsa u toku igrice korištene su sljedeće funkcije:
 \begin{itemize}
-\item Init()- funkcija za inicijalizaciju displeja (postavljanje fonta, orijentacije, povezivanjem sa izlaznim tokom itd)
-\item ShowLevelMenu() - funkcija koja prikazuje početni izgled ekrana na kojem se nude opcije za odabir levela
-\item DrawCursor() - prikaz trenutno odabranog levela
-\item StartGame() - prikazuje ekran kad igra započne
-\item ShowGameOverScreen() - prikaz da je igra završena i ispis rezultata
+\item Init()- funkcija za inicijalizaciju displeja (postavljanje fonta, orijentacije, povezivanjem sa izlaznim tokom itd) \textbf{\big[Lamija/Termin 1\big]}
+\item ShowLevelMenu() - funkcija koja prikazuje početni izgled ekrana na kojem se nude opcije za odabir levela \textbf{\big[Lamija/Termin 1\big]}
+\item DrawCursor() - prikaz trenutno odabranog levela \textbf{\big[Denis/Termin 1\big]}
+\item StartGame() - prikazuje ekran kad igra započne \textbf{\big[Denis/Termin 1\big]}
+\item ShowGameOverScreen() - prikaz da je igra završena i ispis rezultata \textbf{\big[Lamija/Termin 3\big]}
+\item ShowScore() - prikazuje trenutni broj bodova \textbf{\big[Denis/Termin 2\big]}
+\item ShowNextFigure(int next) - prikaz sljedeće figure \textbf{\big[Lamija/Termin 3\big]}
 \end{itemize}
 Za kontrolu kretanja trenutne figure, te njenu rotaciju koristi se joystick. U ovom konkretnom projektu korišten je Keyes Sjoys joystick. Postoje dvije funkcije za čitanje joysticka, ovisno o trenutnom stanju u igrici:
 \begin{itemize}
-\item ReadJoystickForLevel() - upravlja odabirom levela na početku igrice, samo pokret joystick-a gore i dole donosi rezultat
-\item ReadJoystickForFigure() - čita joystick u toku igre i na osnovu toga vrši pomjeranje ili rotaciju figure (za rotaciju je korišten taster, pomjeranje joysticka lijevo i desno pomjera figuru u tim smjerovima, pomjeranje dole vrši SoftDrop, a gore završava igricu)
+\item ReadJoystickForLevel() - upravlja odabirom levela na početku igrice, samo pokret joystick-a gore i dole donosi rezultat \textbf{\big[Lamija/Termin 1\big]}
+\item ReadJoystickForFigure() - čita joystick u toku igre i na osnovu toga vrši pomjeranje ili rotaciju figure (za rotaciju je korišten taster, pomjeranje joysticka lijevo i desno pomjera figuru u tim smjerovima, pomjeranje dole vrši SoftDrop, a gore završava igricu) \textbf{\big[Lamija/Termin 2\big]}
 \end{itemize}
-Zbog nesavršenosti realizacije joystick-a u obje funkcije je izvršena histereza. \\
+Zbog nesavršenosti realizacije joystick-a u obje funkcije je izvršena histereza.
+\newpage
+\noindent Glavni dio igre su svakako figure. One su modelirane tako da svaka od njih posjeduje gornji lijevi ugao trenutne pozicije na displeju. Na osnovu ovog para koordinata vrši se crtanje figure. Svaka figura se sastoji od 4 mala bloka (nacrtanih kao kvadrat). Koordinate ovih blokova su predefinisane i date su kao matrice 7x4 (7 figura po 4 bloka). Sabirajući gornji lijevi ugao sa ovim koordinatam dobijamo djelove displeja koje figura zauzima. Svaka figure je različite boje. Funkcije za modeliranje kretanja/crtanja/brisanja/rotiranja figure su date ispod:
+\begin{itemize}
+\item Initialize(unsigned char colorIndex) - funkcija za inicijalizaciju figure \textbf{\big[Lamija/Termin 1\big]}
+\item Rotate() - funkcija za rotiranje figure \textbf{\big[Denis/Termin 2\big]}
+\item DrawFigure() - ova funkcija crta figuru na displeju na zadanoj poziciji \textbf{\big[Denis/Termin 1\big]}
+\item DeleteFigure() - briše figuru sa displeja  \textbf{\big[Denis/Termin 1\big]}
+\item OnAttached() - ažurira matricu boja kad figure prestane sa kretanjem  \textbf{\big[Denis/Termin 1\big]}
+\item MoveDown(char delta = 1) - funkcija za pomjeranje figure ka dnu table za igru \textbf{\big[Lamija/Termin 2\big]}
+\item MoveLeft() - pomjeranje ulijevo \textbf{\big[Lamija/Termin 2\big]}
+\item MoveRight() - pomjeranje udesno \textbf{\big[Lamija/Termin 2\big]}
+\item InCollisionDown() - provjera kolizije sa granicama table/drugim figurama kad se figura kreće prema dole \textbf{\big[Lamija/Termin 2\big]}
+\item InCollisionRight() - provjera za kretanje udesno  \textbf{\big[Lamija/Termin 1\big]}
+\item InCollisionLeft() - provjera za kretanje ulijevo \textbf{\big[Lamija/Termin 1\big]}
+\item SoftDrop() - funkcija za SoftDrop \textbf{\big[Denis/Termin 1\big]}
+\end{itemize}
+Ostale su još funkcije koje omogućavaju neke osnove funkcionalnosti igre, nevezano za figure. To su:
+\begin{itemize}
+\item CheckLines(short $\&$ firstLine, short $\&$numOfLines) - traži broj popunjenih redova - \textbf{\big[Denis/Termin 1\big]}
+\item UpdateScore() - ažurira rezultat \textbf{\big[Denis/Termin 1\big]}
+\item UpdateBoard() - ažurira stanje na tabli \textbf{\big[Denis/Termin 3\big]}
+\item IsOver() - provjera je li igra završena \textbf{\big[Denis/Termin 3\big]}
+\end{itemize}
+\newpage
+\noindent Igra se odvija u dvije callback metode koje se pozivaju iz dva Ticker objekta. Jedan callback predstavlja čitanje joystick-a pri odabiru levela. Poziva se periodično. Nakon što je pritisnut taster na joysticku i level je odabran, dati callback se ukloni sa tickera. Na drugi ticker se postavi novi callback. Ovaj callback započinje igru. U zavisnosti od levela zavisi i period tickera. Na početku ove metode spušta se figura. Nakon toga se vrši provjera da li je moguće dalje pomjerati figuru. Ukoliko nije, generiše se nova figura (random). Nakon toga se vrši provjera da li je igra gotova. Ukoliko je igra gotova, prikaže se ekran za kraj igre, pa se nakon čekanja od 3s vrati na početni ekran za odabir levela. \\
+U projektu postoji još pomoćnih funkcija koje pomaže da se postigne funkcionalnost funkcija navedenih iznad. U projektu se koristi jedino taster sa joystick-a. Izvršen je debouncing prilikom pritiska na dati taster, te je omogućeno okidanje na ivicu. \\
 \end{document}
