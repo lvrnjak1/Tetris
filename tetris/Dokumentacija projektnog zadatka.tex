@@ -1,0 +1,40 @@
+\documentclass[a4paper,12pt,twoside]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{ragged2e}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{Ugradbeni sistemi}
+\fancyhead[RE,LO]{Elektrotehnički fakultet Sarajevo}
+
+ 
+\begin{document}
+\begin{center}
+{\Huge \bf Projekat Tetris } \\
+\vspace*{0.5cm}
+
+{\Large \bf Razrada projektnog zadatka\\ sa zaduženjima članova tima} \\
+\end{center}
+{\large \bf Grupa 1 \hfill Vrnjak Lamija} \linebreak
+{\large \bf Tim: LD \hfill Selimović Denis} \linebreak
+\linebreak
+Cilj projekta je modeliranje igrice Tetris što je i navedeno u specifikaciji. Funkcionalnosti su realizirane kroz niz klasa i pomoćnih funkcija. \\
+U projektu se koristi Banggood display kao grafički interfejs za igricu. Za rad sa displejem korištena je odgovarajuća biblioteka koja nudi skup funkcija od kojih su neke korištene za realizaciju igrice. Za upravljanje displejom, te prikaz različitih interfejsa u toku igrice korištene su sljedeće funkcije:
+\begin{itemize}
+\item Init()- funkcija za inicijalizaciju displeja (postavljanje fonta, orijentacije, povezivanjem sa izlaznim tokom itd)
+\item ShowLevelMenu() - funkcija koja prikazuje početni izgled ekrana na kojem se nude opcije za odabir levela
+\item DrawCursor() - prikaz trenutno odabranog levela
+\item StartGame() - prikazuje ekran kad igra započne
+\item ShowGameOverScreen() - prikaz da je igra završena i ispis rezultata
+\end{itemize}
+Za kontrolu kretanja trenutne figure, te njenu rotaciju koristi se joystick. U ovom konkretnom projektu korišten je Keyes Sjoys joystick. Postoje dvije funkcije za čitanje joysticka, ovisno o trenutnom stanju u igrici:
+\begin{itemize}
+\item ReadJoystickForLevel() - upravlja odabirom levela na početku igrice, samo pokret joystick-a gore i dole donosi rezultat
+\item ReadJoystickForFigure() - čita joystick u toku igre i na osnovu toga vrši pomjeranje ili rotaciju figure (za rotaciju je korišten taster, pomjeranje joysticka lijevo i desno pomjera figuru u tim smjerovima, pomjeranje dole vrši SoftDrop, a gore završava igricu)
+\end{itemize}
+Zbog nesavršenosti realizacije joystick-a u obje funkcije je izvršena histereza. \\
+\end{document}
